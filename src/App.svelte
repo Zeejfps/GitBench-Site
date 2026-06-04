@@ -1,181 +1,533 @@
 <script lang="ts">
-  type Feature = {
-    title: string
-    body: string
+  import { onMount } from 'svelte'
+
+  const REPO = 'Zeejfps/GitBench'
+  const LATEST = `https://github.com/${REPO}/releases/latest`
+  const dl = (asset: string) =>
+    `https://github.com/${REPO}/releases/latest/download/${asset}`
+
+  // Stable, unversioned asset names produced by the Velopack release workflow.
+  const assets = {
+    winSetup: dl('GitBench-win-x64-Setup.exe'),
+    winPortable: dl('GitBench-win-x64-Portable.zip'),
+    macPkg: dl('GitBench-osx-arm64-Setup.pkg'),
+    macPortable: dl('GitBench-osx-arm64-Portable.zip'),
+    linuxAppImage: dl('GitBench-linux-x64.AppImage'),
   }
 
+  type OS = 'windows' | 'mac' | 'linux' | 'unknown'
+
+  function detectOS(): OS {
+    if (typeof navigator === 'undefined') return 'unknown'
+    const ua = navigator.userAgent
+    if (/Windows|Win64|Win32/i.test(ua)) return 'windows'
+    if (/Mac OS X|Macintosh/i.test(ua) && !/iPhone|iPad|iPod/i.test(ua)) return 'mac'
+    if (/Linux/i.test(ua) && !/Android/i.test(ua)) return 'linux'
+    return 'unknown'
+  }
+
+  const primary: Record<OS, { label: string; href: string }> = {
+    windows: { label: 'Download for Windows', href: assets.winSetup },
+    mac: { label: 'Download for macOS', href: assets.macPkg },
+    linux: { label: 'Download for Linux', href: assets.linuxAppImage },
+    unknown: { label: 'Download', href: '#download' },
+  }
+
+  type Feature = { title: string; body: string }
   const features: Feature[] = [
     {
       title: 'Visual commit graph',
       body: 'Trace branches, merges, and history at a glance with a fast, readable graph renderer.',
     },
     {
-      title: 'Live repo watching',
-      body: 'GitBench keeps up with changes on disk and refreshes the moment your working tree moves.',
+      title: 'Branch management',
+      body: 'Checkout, rename, delete, merge, rebase, and fast-forward — local and remote — straight from the context menu.',
     },
     {
-      title: 'Built for speed',
-      body: 'A native desktop client that stays responsive on repositories large and small.',
+      title: 'Staging & inline diffs',
+      body: 'Stage and unstage by file or folder, discard, stash, and review every change in an inline diff view.',
+    },
+    {
+      title: 'Worktrees, stashes & submodules',
+      body: 'Browse stashes and manage worktrees and submodules — the bits a real repository actually has.',
+    },
+    {
+      title: 'Multiple repositories',
+      body: 'Organize all your repos into collapsible groups in the sidebar and jump between them instantly.',
+    },
+    {
+      title: 'Auto-updates',
+      body: 'GitBench checks for new releases on launch and applies them with one click — no manual reinstalls.',
     },
   ]
+
+  let os: OS = 'unknown'
+  let version = ''
+  let shotTheme: 'dark' | 'light' = 'dark'
+
+  onMount(() => {
+    os = detectOS()
+    fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data) => {
+        if (data?.tag_name) version = data.tag_name
+      })
+      .catch(() => {
+        /* rate-limited or offline — just don't show a version */
+      })
+  })
+
+  $: primaryCta = primary[os]
 
   const year = new Date().getFullYear()
 </script>
 
-<main>
-  <header class="hero">
-    <nav>
-      <span class="brand">
-        <span class="brand-mark">⎇</span> GitBench
-      </span>
-      <a class="nav-link" href="https://github.com/Zeejfps/GitBench">GitHub</a>
-    </nav>
+<div class="page">
+  <nav>
+    <a class="brand" href="/">
+      <img class="brand-mark" src="/icon.png" alt="" width="32" height="32" />
+      <span>GitBench</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="https://github.com/{REPO}">GitHub</a>
+    </div>
+  </nav>
 
+  <header class="hero">
     <div class="hero-inner">
-      <h1>A fast, visual Git client.</h1>
+      <p class="eyebrow">Free · open source · Windows, macOS &amp; Linux</p>
+      <h1>A fast, visual Git client<br />for people who live in their repos.</h1>
       <p class="lede">
-        Explore history, branches, and commits with a clean desktop app built for
-        people who live in their repositories.
+        GitBench is a native desktop Git client — GPU-accelerated, compiled to a
+        single executable with no runtime to install. Explore history, stage
+        changes, and manage branches in light or dark, and let it keep itself up to date.
       </p>
-      <div class="cta-row">
-        <a class="btn primary" href="https://github.com/Zeejfps/GitBench/releases">Download</a>
-        <a class="btn ghost" href="https://github.com/Zeejfps/GitBench">View source</a>
+
+      <div class="cta">
+        <a
+          class="btn primary"
+          href={primaryCta.href}
+          rel={primaryCta.href.startsWith('#') ? null : 'noopener'}
+        >
+          <span class="dl-arrow" aria-hidden="true">↓</span>
+          {primaryCta.label}
+        </a>
+        <p class="cta-meta">
+          {#if version}
+            Latest: {version} · free
+          {:else}
+            Latest release · free
+          {/if}
+          {#if os === 'mac'} · Apple Silicon{/if}
+          · <a href="#download">other platforms</a>
+        </p>
       </div>
     </div>
+
+    <figure class="shot">
+      <div class="shot-toggle" role="group" aria-label="Screenshot theme">
+        <button
+          class="toggle-btn"
+          class:active={shotTheme === 'dark'}
+          aria-pressed={shotTheme === 'dark'}
+          on:click={() => (shotTheme = 'dark')}>Dark</button>
+        <button
+          class="toggle-btn"
+          class:active={shotTheme === 'light'}
+          aria-pressed={shotTheme === 'light'}
+          on:click={() => (shotTheme = 'light')}>Light</button>
+      </div>
+      <div class="shot-frame">
+        <img
+          src={shotTheme === 'dark' ? '/screenshot_dark.jpg' : '/screenshot_light.jpg'}
+          alt="GitBench showing the commit history, graph, and an inline diff view in {shotTheme} mode"
+          loading="eager"
+        />
+      </div>
+    </figure>
   </header>
 
-  <section class="features">
-    {#each features as feature}
-      <article class="card">
-        <h3>{feature.title}</h3>
-        <p>{feature.body}</p>
+  <section id="features" class="features">
+    <h2 class="section-title">Everything a real repo needs</h2>
+    <div class="feature-grid">
+      {#each features as feature}
+        <article class="card">
+          <h3>{feature.title}</h3>
+          <p>{feature.body}</p>
+        </article>
+      {/each}
+    </div>
+  </section>
+
+  <section id="download" class="download">
+    <h2 class="section-title">Download GitBench{version ? ` ${version}` : ''}</h2>
+    <p class="download-sub">Pick your platform — installs include automatic updates.</p>
+
+    <div class="platforms">
+      <article class="platform" class:recommended={os === 'windows'}>
+        <h3>Windows</h3>
+        <a class="btn primary block" href={assets.winSetup} rel="noopener">Download installer</a>
+        <p class="platform-meta">
+          <code>Setup.exe</code> · x64 · or
+          <a href={assets.winPortable} rel="noopener">portable .zip</a>
+        </p>
       </article>
-    {/each}
+
+      <article class="platform" class:recommended={os === 'mac'}>
+        <h3>macOS</h3>
+        <a class="btn primary block" href={assets.macPkg} rel="noopener">Download .pkg</a>
+        <p class="platform-meta">
+          Apple Silicon · or
+          <a href={assets.macPortable} rel="noopener">portable .zip</a>
+        </p>
+      </article>
+
+      <article class="platform" class:recommended={os === 'linux'}>
+        <h3>Linux</h3>
+        <a class="btn primary block" href={assets.linuxAppImage} rel="noopener">Download AppImage</a>
+        <p class="platform-meta"><code>.AppImage</code> · x64</p>
+      </article>
+    </div>
+
+    <p class="requires">
+      GitBench drives the <code>git</code> command line, so make sure
+      <a href="https://git-scm.com/downloads">Git</a> is installed and on your
+      <code>PATH</code>. All builds and source are on
+      <a href="{LATEST}">GitHub Releases</a>.
+    </p>
   </section>
 
   <footer>
-    <p>© {year} GitBench · built by <a href="https://builtbyzee.com">zee</a></p>
+    <p>© {year} GitBench · built by <a href="https://evasilyev.com">zee</a></p>
   </footer>
-</main>
+</div>
 
 <style>
-  main {
-    max-width: 960px;
+  .page {
+    max-width: 1040px;
     margin: 0 auto;
     padding: 0 24px;
   }
 
+  /* ---------- nav ---------- */
   nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 0;
+    padding: 22px 0;
   }
 
   .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 0.02em;
+    font-size: 1.12rem;
+    letter-spacing: 0.01em;
+    color: var(--text);
   }
-
+  .brand:hover {
+    text-decoration: none;
+  }
   .brand-mark {
-    color: var(--accent);
-    margin-right: 4px;
+    border-radius: 8px;
+    display: block;
   }
 
-  .nav-link {
-    color: var(--text-dim);
+  .nav-links {
+    display: flex;
+    gap: 26px;
     font-size: 0.95rem;
   }
+  .nav-links a {
+    color: var(--text-dim);
+  }
+  .nav-links a:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
 
-  .hero-inner {
-    padding: 72px 0 88px;
+  /* ---------- hero ---------- */
+  .hero {
     text-align: center;
+    padding: 64px 0 32px;
+  }
+  .hero-inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    margin: 0 0 22px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    background: var(--bg-elev);
   }
 
   h1 {
-    font-size: clamp(2.4rem, 6vw, 3.6rem);
-    line-height: 1.1;
-    margin: 0 0 20px;
-    background: linear-gradient(120deg, var(--text), var(--accent));
+    font-size: clamp(2.3rem, 5.2vw, 3.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+    background: linear-gradient(120deg, var(--text) 40%, var(--accent));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
   .lede {
-    max-width: 560px;
-    margin: 0 auto 36px;
-    font-size: 1.15rem;
+    max-width: 600px;
+    margin: 0 auto 34px;
+    font-size: 1.14rem;
     color: var(--text-dim);
   }
 
-  .cta-row {
+  .cta {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 14px;
-    justify-content: center;
-    flex-wrap: wrap;
   }
 
+  .cta-meta {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+  .cta-meta a {
+    color: var(--text-dim);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cta-meta a:hover {
+    color: var(--text);
+  }
+
+  /* ---------- buttons ---------- */
   .btn {
-    display: inline-block;
-    padding: 12px 26px;
-    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 9px;
     font-weight: 600;
-    font-size: 0.98rem;
+    font-size: 1rem;
     border: 1px solid transparent;
-    transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+    transition:
+      transform 0.08s ease,
+      box-shadow 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease;
   }
-
   .btn:hover {
     text-decoration: none;
     transform: translateY(-1px);
   }
-
   .btn.primary {
     background: var(--accent);
     color: #1a1205;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset;
+  }
+  .btn.primary:hover {
+    background: #f7984f;
+    box-shadow: 0 8px 24px -8px var(--accent);
+  }
+  .btn.block {
+    display: flex;
+    width: 100%;
+  }
+  .dl-arrow {
+    font-size: 1.05em;
+    line-height: 1;
   }
 
-  .btn.ghost {
-    border-color: var(--border);
+  /* ---------- screenshot ---------- */
+  .shot {
+    margin: 56px 0 0;
+  }
+  .shot-toggle {
+    display: inline-flex;
+    gap: 2px;
+    margin: 0 0 16px;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elev);
+  }
+  .toggle-btn {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: transparent;
+    transition: color 0.12s ease, background 0.12s ease;
+  }
+  .toggle-btn:hover {
     color: var(--text);
   }
+  .toggle-btn.active {
+    background: var(--accent);
+    color: #1a1205;
+  }
+  .shot-frame {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-elev);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 40px 90px -40px rgba(0, 0, 0, 0.8);
+  }
+  .shot-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 
-  .btn.ghost:hover {
-    border-color: var(--text-dim);
+  /* ---------- sections ---------- */
+  .section-title {
+    text-align: center;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
   }
 
   .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-    padding: 8px 0 80px;
+    padding: 96px 0 16px;
   }
-
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 36px;
+  }
   .card {
     background: var(--bg-elev);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 24px;
+    transition: border-color 0.15s ease, transform 0.1s ease;
   }
-
+  .card:hover {
+    border-color: #41484f;
+    transform: translateY(-2px);
+  }
   .card h3 {
     margin: 0 0 10px;
-    font-size: 1.1rem;
+    font-size: 1.08rem;
   }
-
   .card p {
     margin: 0;
     color: var(--text-dim);
-    font-size: 0.97rem;
+    font-size: 0.96rem;
   }
 
+  /* ---------- download ---------- */
+  .download {
+    padding: 96px 0 16px;
+  }
+  .download-sub {
+    text-align: center;
+    color: var(--text-dim);
+    margin: 0 0 40px;
+  }
+  .platforms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+  .platform {
+    position: relative;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .platform.recommended {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .platform.recommended::after {
+    content: 'Your platform';
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #1a1205;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .platform h3 {
+    margin: 0 0 18px;
+    font-size: 1.2rem;
+  }
+  .platform-meta {
+    margin: 14px 0 0;
+    font-size: 0.86rem;
+    color: var(--text-dim);
+  }
+  .platform-meta a {
+    color: var(--text-dim);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .platform-meta a:hover {
+    color: var(--text);
+  }
+
+  code {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.85em;
+  }
+
+  .requires {
+    max-width: 620px;
+    margin: 40px auto 0;
+    text-align: center;
+    font-size: 0.92rem;
+    color: var(--text-dim);
+  }
+
+  /* ---------- footer ---------- */
   footer {
     border-top: 1px solid var(--border);
-    padding: 28px 0 48px;
+    margin-top: 96px;
+    padding: 30px 0 56px;
     text-align: center;
     color: var(--text-dim);
     font-size: 0.9rem;
+  }
+
+  @media (max-width: 560px) {
+    .nav-links a:first-child {
+      display: none;
+    }
+    .hero {
+      padding-top: 40px;
+    }
+    .features,
+    .download {
+      padding-top: 72px;
+    }
   }
 </style>
