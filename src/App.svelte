@@ -1,5 +1,10 @@
-<script>
-  const features = [
+<script lang="ts">
+  type Feature = {
+    title: string
+    body: string
+  }
+
+  const features: Feature[] = [
     {
       title: 'Visual commit graph',
       body: 'Trace branches, merges, and history at a glance with a fast, readable graph renderer.',
