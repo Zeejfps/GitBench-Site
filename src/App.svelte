@@ -1,5 +1,14 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, type Component } from 'svelte'
+  import Download from '@lucide/svelte/icons/download'
+  import Sun from '@lucide/svelte/icons/sun'
+  import Moon from '@lucide/svelte/icons/moon'
+  import FolderGit2 from '@lucide/svelte/icons/folder-git-2'
+  import GitBranch from '@lucide/svelte/icons/git-branch'
+  import GitMerge from '@lucide/svelte/icons/git-merge'
+  import FileDiff from '@lucide/svelte/icons/file-diff'
+  import Package from '@lucide/svelte/icons/package'
+  import RefreshCw from '@lucide/svelte/icons/refresh-cw'
 
   const REPO = 'Zeejfps/GitBench'
   const LATEST = `https://github.com/${REPO}/releases/latest`
@@ -33,31 +42,37 @@
     unknown: { label: 'Download', href: '#download' },
   }
 
-  type Feature = { title: string; body: string }
+  type Feature = { title: string; body: string; icon: Component }
   const features: Feature[] = [
     {
       title: 'Switch & organize repos',
       body: 'Group every repository into collapsible folders in the sidebar and jump between them instantly. Your whole workspace in one window.',
+      icon: FolderGit2,
     },
     {
       title: 'Visual commit graph',
       body: 'Trace branches, merges, and history at a glance with a fast, readable graph renderer.',
+      icon: GitBranch,
     },
     {
       title: 'Branch management',
       body: 'Checkout, rename, delete, merge, rebase, and fast-forward, local and remote, straight from the context menu.',
+      icon: GitMerge,
     },
     {
       title: 'Staging & inline diffs',
       body: 'Stage and unstage by file or folder, discard, stash, and review every change in an inline diff view.',
+      icon: FileDiff,
     },
     {
       title: 'Worktrees, stashes & submodules',
       body: 'Browse stashes and manage worktrees and submodules, the bits a real repository actually has.',
+      icon: Package,
     },
     {
       title: 'Auto-updates',
       body: 'GitBench checks for new releases on launch and applies them with one click, no manual reinstalls.',
+      icon: RefreshCw,
     },
   ]
 
@@ -91,7 +106,12 @@
     <div class="nav-links">
       <a href="#features">Features</a>
       <a href="#download">Download</a>
-      <a href="https://github.com/{REPO}">GitHub</a>
+      <a class="gh-link" href="https://github.com/{REPO}">
+        <svg class="gh-mark" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GitHub
+      </a>
     </div>
   </nav>
 
@@ -114,7 +134,7 @@
           href={primaryCta.href}
           rel={primaryCta.href.startsWith('#') ? null : 'noopener'}
         >
-          <span class="dl-arrow" aria-hidden="true">↓</span>
+          <Download size={18} aria-hidden="true" />
           {primaryCta.label}
         </a>
         <p class="cta-meta">
@@ -135,12 +155,12 @@
           class="toggle-btn"
           class:active={shotTheme === 'dark'}
           aria-pressed={shotTheme === 'dark'}
-          on:click={() => (shotTheme = 'dark')}>Dark</button>
+          on:click={() => (shotTheme = 'dark')}><Moon size={15} aria-hidden="true" /> Dark</button>
         <button
           class="toggle-btn"
           class:active={shotTheme === 'light'}
           aria-pressed={shotTheme === 'light'}
-          on:click={() => (shotTheme = 'light')}>Light</button>
+          on:click={() => (shotTheme = 'light')}><Sun size={15} aria-hidden="true" /> Light</button>
       </div>
       <div class="shot-frame">
         <img
@@ -156,7 +176,9 @@
     <h2 class="section-title">Everything a real repo needs</h2>
     <div class="feature-grid">
       {#each features as feature}
+        {@const Icon = feature.icon}
         <article class="card">
+          <span class="card-icon"><Icon size={22} aria-hidden="true" /></span>
           <h3>{feature.title}</h3>
           <p>{feature.body}</p>
         </article>
@@ -171,7 +193,7 @@
     <div class="platforms">
       <article class="platform" class:recommended={os === 'windows'}>
         <h3>Windows</h3>
-        <a class="btn primary block" href={assets.winSetup} rel="noopener">Download installer</a>
+        <a class="btn primary block" href={assets.winSetup} rel="noopener"><Download size={17} aria-hidden="true" /> Download installer</a>
         <p class="platform-meta">
           <code>Setup.exe</code> · x64 · or
           <a href={assets.winPortable} rel="noopener">portable .zip</a>
@@ -180,7 +202,7 @@
 
       <article class="platform" class:recommended={os === 'mac'}>
         <h3>macOS</h3>
-        <a class="btn primary block" href={assets.macPkg} rel="noopener">Download .pkg</a>
+        <a class="btn primary block" href={assets.macPkg} rel="noopener"><Download size={17} aria-hidden="true" /> Download .pkg</a>
         <p class="platform-meta">
           Apple Silicon · or
           <a href={assets.macPortable} rel="noopener">portable .zip</a>
@@ -189,7 +211,7 @@
 
       <article class="platform" class:recommended={os === 'linux'}>
         <h3>Linux</h3>
-        <a class="btn primary block" href={assets.linuxAppImage} rel="noopener">Download AppImage</a>
+        <a class="btn primary block" href={assets.linuxAppImage} rel="noopener"><Download size={17} aria-hidden="true" /> Download AppImage</a>
         <p class="platform-meta"><code>.AppImage</code> · x64</p>
       </article>
     </div>
@@ -255,6 +277,14 @@
   .nav-links a:hover {
     color: var(--text);
     text-decoration: none;
+  }
+  .gh-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .gh-mark {
+    display: block;
   }
 
   /* ---------- hero ---------- */
@@ -363,9 +393,8 @@
     display: flex;
     width: 100%;
   }
-  .dl-arrow {
-    font-size: 1.05em;
-    line-height: 1;
+  .btn :global(svg) {
+    flex: none;
   }
 
   /* ---------- screenshot ---------- */
@@ -385,7 +414,10 @@
     appearance: none;
     border: 0;
     cursor: pointer;
-    padding: 6px 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 16px;
     border-radius: 999px;
     font: inherit;
     font-size: 0.85rem;
@@ -443,6 +475,17 @@
   .card:hover {
     border-color: #41484f;
     transform: translateY(-2px);
+  }
+  .card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 16px;
+    border-radius: 11px;
+    color: var(--accent);
+    background: rgba(240, 136, 62, 0.12);
   }
   .card h3 {
     margin: 0 0 10px;

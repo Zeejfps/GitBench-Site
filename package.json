@@ -17,5 +17,8 @@
     "tslib": "^2.8.1",
     "typescript": "~5.7.3",
     "vite": "^6.0.7"
+  },
+  "dependencies": {
+    "@lucide/svelte": "^1.17.0"
   }
 }
