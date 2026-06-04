@@ -36,12 +36,16 @@
   type Feature = { title: string; body: string }
   const features: Feature[] = [
     {
+      title: 'Switch & organize repos',
+      body: 'Group every repository into collapsible folders in the sidebar and jump between them instantly. Your whole workspace in one window.',
+    },
+    {
       title: 'Visual commit graph',
       body: 'Trace branches, merges, and history at a glance with a fast, readable graph renderer.',
     },
     {
       title: 'Branch management',
-      body: 'Checkout, rename, delete, merge, rebase, and fast-forward — local and remote — straight from the context menu.',
+      body: 'Checkout, rename, delete, merge, rebase, and fast-forward, local and remote, straight from the context menu.',
     },
     {
       title: 'Staging & inline diffs',
@@ -49,15 +53,11 @@
     },
     {
       title: 'Worktrees, stashes & submodules',
-      body: 'Browse stashes and manage worktrees and submodules — the bits a real repository actually has.',
-    },
-    {
-      title: 'Multiple repositories',
-      body: 'Organize all your repos into collapsible groups in the sidebar and jump between them instantly.',
+      body: 'Browse stashes and manage worktrees and submodules, the bits a real repository actually has.',
     },
     {
       title: 'Auto-updates',
-      body: 'GitBench checks for new releases on launch and applies them with one click — no manual reinstalls.',
+      body: 'GitBench checks for new releases on launch and applies them with one click, no manual reinstalls.',
     },
   ]
 
@@ -73,7 +73,7 @@
         if (data?.tag_name) version = data.tag_name
       })
       .catch(() => {
-        /* rate-limited or offline — just don't show a version */
+        /* rate-limited or offline: just don't show a version */
       })
   })
 
@@ -97,12 +97,15 @@
 
   <header class="hero">
     <div class="hero-inner">
-      <p class="eyebrow">Free · open source · Windows, macOS &amp; Linux</p>
-      <h1>A fast, visual Git client<br />for people who live in their repos.</h1>
+      <p class="eyebrow">
+        Free · <a href="https://github.com/{REPO}">open source</a> · Windows, macOS &amp; Linux
+      </p>
+      <h1>All your repositories,<br />organized and a click away.</h1>
       <p class="lede">
-        GitBench is a native desktop Git client — GPU-accelerated, compiled to a
-        single executable with no runtime to install. Explore history, stage
-        changes, and manage branches in light or dark, and let it keep itself up to date.
+        GitBench keeps every repo you work in grouped in one sidebar, so you can
+        switch between them instantly, with no reopening windows or re-adding folders.
+        It's a native, GPU-accelerated client with a visual commit graph, inline
+        diffs, and one-click auto-updates.
       </p>
 
       <div class="cta">
@@ -163,7 +166,7 @@
 
   <section id="download" class="download">
     <h2 class="section-title">Download GitBench{version ? ` ${version}` : ''}</h2>
-    <p class="download-sub">Pick your platform — installs include automatic updates.</p>
+    <p class="download-sub">Pick your platform. Installs include automatic updates.</p>
 
     <div class="platforms">
       <article class="platform" class:recommended={os === 'windows'}>
@@ -200,6 +203,11 @@
   </section>
 
   <footer>
+    <div class="footer-links">
+      <a href="https://github.com/{REPO}">GitHub</a>
+      <a href="https://github.com/{REPO}/releases">Releases</a>
+      <a href="https://github.com/{REPO}/issues">Report an issue</a>
+    </div>
     <p>© {year} GitBench · built by <a href="https://evasilyev.com">zee</a></p>
   </footer>
 </div>
@@ -269,12 +277,24 @@
     color: var(--text-dim);
     background: var(--bg-elev);
   }
+  .eyebrow a {
+    color: var(--text-dim);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 2px;
+  }
+  .eyebrow a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
 
   h1 {
     font-size: clamp(2.3rem, 5.2vw, 3.5rem);
-    line-height: 1.08;
+    line-height: 1.16;
     letter-spacing: -0.02em;
     margin: 0 0 22px;
+    /* Pad so background-clip: text doesn't shave glyph edges/descenders (e.g. the "g"). */
+    padding: 0.04em 0.08em 0.12em;
     background: linear-gradient(120deg, var(--text) 40%, var(--accent));
     -webkit-background-clip: text;
     background-clip: text;
@@ -516,6 +536,20 @@
     text-align: center;
     color: var(--text-dim);
     font-size: 0.9rem;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 16px;
+  }
+  .footer-links a {
+    color: var(--text-dim);
+  }
+  .footer-links a:hover {
+    color: var(--text);
+    text-decoration: none;
   }
 
   @media (max-width: 560px) {
