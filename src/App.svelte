@@ -24,6 +24,8 @@
     winPortable: dl('GitBench-win-x64-Portable.zip'),
     macPkg: dl('GitBench-osx-arm64-Setup.pkg'),
     macPortable: dl('GitBench-osx-arm64-Portable.zip'),
+    macPkgIntel: dl('GitBench-osx-x64-Setup.pkg'),
+    macPortableIntel: dl('GitBench-osx-x64-Portable.zip'),
     linuxAppImage: dl('GitBench-linux-x64.AppImage'),
   }
 
@@ -147,7 +149,7 @@
           {:else}
             Latest release · free
           {/if}
-          {#if os === 'mac'} · Apple Silicon{/if}
+          {#if os === 'mac'} · Apple Silicon &amp; Intel{/if}
           · <a href="#download">other platforms</a>
         </p>
       </div>
@@ -206,10 +208,12 @@
 
       <article class="platform" class:recommended={os === 'mac'}>
         <h3>macOS</h3>
-        <a class="btn primary block" href={assets.macPkg} rel="noopener"><Download size={17} aria-hidden="true" /> Download .pkg</a>
+        <a class="btn primary block" href={assets.macPkg} rel="noopener"><Download size={17} aria-hidden="true" /> Apple Silicon .pkg</a>
+        <a class="btn secondary block" href={assets.macPkgIntel} rel="noopener"><Download size={17} aria-hidden="true" /> Intel .pkg</a>
         <p class="platform-meta">
-          Apple Silicon · or
-          <a href={assets.macPortable} rel="noopener">portable .zip</a>
+          Apple Silicon or Intel · portable .zip for
+          <a href={assets.macPortable} rel="noopener">Apple Silicon</a> ·
+          <a href={assets.macPortableIntel} rel="noopener">Intel</a>
         </p>
       </article>
 
@@ -391,9 +395,20 @@
     background: #f7984f;
     box-shadow: 0 8px 24px -8px var(--accent);
   }
+  .btn.secondary {
+    background: var(--bg-elev);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn.secondary:hover {
+    border-color: var(--accent);
+  }
   .btn.block {
     display: flex;
     width: 100%;
+  }
+  .btn.block + .btn.block {
+    margin-top: 10px;
   }
   .btn :global(svg) {
     flex: none;
