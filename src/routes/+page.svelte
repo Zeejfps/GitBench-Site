@@ -81,9 +81,9 @@
     },
   ]
 
-  let os: OS = 'unknown'
-  let version = ''
-  let shotTheme: 'dark' | 'light' = 'dark'
+  let os: OS = $state('unknown')
+  let version = $state('')
+  let shotTheme: 'dark' | 'light' = $state('dark')
 
   onMount(() => {
     os = detectOS()
@@ -97,10 +97,61 @@
       })
   })
 
-  $: primaryCta = primary[os]
+  const primaryCta = $derived(primary[os])
 
+  // Evaluated at prerender time; the displayed copyright year tracks the build.
   const year = new Date().getFullYear()
+
+  const title = 'GitBench: a fast Git client for Windows, macOS & Linux'
+  const description =
+    'A fast, native desktop Git client for juggling many repositories: organize and switch between repos, a visual commit graph, inline diffs, and auto-updates. Free and open source.'
+  const ogDescription =
+    'A native desktop Git client for juggling many repositories: a visual commit graph, inline diffs, and one-click auto-updates. Free for Windows, macOS, and Linux.'
+  const siteUrl = 'https://gitbench.builtbyzee.com/'
+  const ogImage = 'https://gitbench.builtbyzee.com/screenshot_dark.jpg'
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'GitBench',
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Windows, macOS, Linux',
+    url: siteUrl,
+    downloadUrl: LATEST,
+    image: ogImage,
+    description:
+      'A fast, native desktop Git client for juggling many repositories, with a visual commit graph, inline diffs, and one-click auto-updates.',
+    author: { '@type': 'Person', name: 'Zee Vasilyev', url: 'https://evasilyev.com' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  }
 </script>
+
+<svelte:head>
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={siteUrl} />
+
+  <meta property="og:site_name" content="GitBench" />
+  <meta property="og:title" content="GitBench: a fast, cross-platform Git client" />
+  <meta property="og:description" content={ogDescription} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={siteUrl} />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="2267" />
+  <meta property="og:image:height" content="1245" />
+  <meta
+    property="og:image:alt"
+    content="The GitBench desktop app showing commit history, the commit graph, and an inline diff."
+  />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GitBench: a fast, cross-platform Git client" />
+  <meta name="twitter:description" content={ogDescription} />
+  <meta name="twitter:image" content={ogImage} />
+
+  {@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
+</svelte:head>
 
 {#snippet ghMark(size: number)}
   <svg class="gh-mark" viewBox="0 0 16 16" width={size} height={size} aria-hidden="true" fill="currentColor">
@@ -161,12 +212,12 @@
           class="toggle-btn"
           class:active={shotTheme === 'dark'}
           aria-pressed={shotTheme === 'dark'}
-          on:click={() => (shotTheme = 'dark')}><Moon size={15} aria-hidden="true" /> Dark</button>
+          onclick={() => (shotTheme = 'dark')}><Moon size={15} aria-hidden="true" /> Dark</button>
         <button
           class="toggle-btn"
           class:active={shotTheme === 'light'}
           aria-pressed={shotTheme === 'light'}
-          on:click={() => (shotTheme = 'light')}><Sun size={15} aria-hidden="true" /> Light</button>
+          onclick={() => (shotTheme = 'light')}><Sun size={15} aria-hidden="true" /> Light</button>
       </div>
       <div class="shot-frame">
         <img
@@ -228,7 +279,7 @@
       GitBench drives the <code>git</code> command line, so make sure
       <a href="https://git-scm.com/downloads">Git</a> is installed and on your
       <code>PATH</code>. All builds and source are on
-      <a href="{LATEST}">GitHub Releases</a>.
+      <a href={LATEST}>GitHub Releases</a>.
     </p>
   </section>
 
