@@ -33,3 +33,32 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* ---------- scroll reveal ---------- */
+/* Gated on `html.reveal-ready` (set in app.html only when motion is allowed),
+   so the hidden state never applies for no-JS or reduced-motion visitors.
+   Uses the standalone `translate` property (not `transform`) so it composes
+   with the `transform`-based hover lifts on cards/buttons instead of fighting
+   them for the single `transform` property. */
+.reveal-ready .reveal {
+  opacity: 0;
+  translate: 0 22px;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--reveal-i, 0) * 80ms);
+  will-change: opacity, translate;
+}
+.reveal-ready .reveal.is-revealed {
+  opacity: 1;
+  translate: none;
+}
+
+/* Belt-and-braces: if motion preference flips after load, never hide content. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-ready .reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}

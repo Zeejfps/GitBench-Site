@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, type Component } from 'svelte'
+  import { reveal } from '$lib/reveal'
   import Download from '@lucide/svelte/icons/download'
   import Sun from '@lucide/svelte/icons/sun'
   import Moon from '@lucide/svelte/icons/moon'
@@ -218,18 +219,18 @@
 
   <header class="hero">
     <div class="hero-inner">
-      <p class="eyebrow">
+      <p class="eyebrow reveal" use:reveal>
         Free · <a href="https://github.com/{REPO}">open source</a> · Windows, macOS &amp; Linux
       </p>
-      <h1>All your repositories,<br />organized and a click away.</h1>
-      <p class="lede">
+      <h1 class="reveal" use:reveal={{ i: 1 }}>All your repositories,<br />organized and a click away.</h1>
+      <p class="lede reveal" use:reveal={{ i: 2 }}>
         GitBench keeps every repo you work in grouped in one sidebar, so you can
         switch between them instantly, with no reopening windows or re-adding folders.
         It's a native, GPU-accelerated client with a visual commit graph, inline
         diffs, and one-click auto-updates.
       </p>
 
-      <div class="cta">
+      <div class="cta reveal" use:reveal={{ i: 3 }}>
         <a
           class="btn primary"
           href={primaryCta.href}
@@ -249,8 +250,15 @@
         </p>
       </div>
     </div>
+  </header>
 
-    <figure class="shot">
+  <section id="preview" class="preview">
+    <h2 class="section-title reveal" use:reveal>See it in action</h2>
+    <p class="preview-sub reveal" use:reveal={{ i: 1 }}>
+      GitBench comes with a dark and a light theme — see how both look.
+    </p>
+
+    <figure class="shot reveal" use:reveal={{ i: 2 }}>
       <div class="shot-toggle" role="group" aria-label="Screenshot theme">
         <button
           class="toggle-btn"
@@ -271,14 +279,14 @@
         />
       </div>
     </figure>
-  </header>
+  </section>
 
   <section id="features" class="features">
-    <h2 class="section-title">Everything a real repo needs</h2>
+    <h2 class="section-title reveal" use:reveal>Everything a real repo needs</h2>
     <div class="feature-grid">
-      {#each features as feature}
+      {#each features as feature, i}
         {@const Icon = feature.icon}
-        <article class="card">
+        <article class="card reveal" use:reveal={{ i }}>
           <span class="card-icon"><Icon size={22} aria-hidden="true" /></span>
           <h3>{feature.title}</h3>
           <p>{feature.body}</p>
@@ -288,11 +296,11 @@
   </section>
 
   <section id="download" class="download">
-    <h2 class="section-title">Download GitBench{version ? ` ${version}` : ''}</h2>
-    <p class="download-sub">Pick your platform. Installs include automatic updates.</p>
+    <h2 class="section-title reveal" use:reveal>Download GitBench{version ? ` ${version}` : ''}</h2>
+    <p class="download-sub reveal" use:reveal>Pick your platform. Installs include automatic updates.</p>
 
     <div class="platforms">
-      <article class="platform" class:recommended={os === 'windows'}>
+      <article class="platform reveal" use:reveal={{ i: 0 }} class:recommended={os === 'windows'}>
         <h3>Windows</h3>
         <a class="btn primary block" href={assets.winSetup} rel="noopener"><Download size={17} aria-hidden="true" /> Download installer</a>
         <p class="platform-meta">
@@ -301,7 +309,7 @@
         </p>
       </article>
 
-      <article class="platform" class:recommended={os === 'mac'}>
+      <article class="platform reveal" use:reveal={{ i: 1 }} class:recommended={os === 'mac'}>
         <h3>macOS</h3>
         <a class="btn primary block" href={assets.macPkg} rel="noopener"><Download size={17} aria-hidden="true" /> Apple Silicon .pkg</a>
         <a class="btn secondary block" href={assets.macPkgIntel} rel="noopener"><Download size={17} aria-hidden="true" /> Intel .pkg</a>
@@ -312,14 +320,14 @@
         </p>
       </article>
 
-      <article class="platform" class:recommended={os === 'linux'}>
+      <article class="platform reveal" use:reveal={{ i: 2 }} class:recommended={os === 'linux'}>
         <h3>Linux</h3>
         <a class="btn primary block" href={assets.linuxAppImage} rel="noopener"><Download size={17} aria-hidden="true" /> Download AppImage</a>
         <p class="platform-meta"><code>.AppImage</code> · x64</p>
       </article>
     </div>
 
-    <p class="requires">
+    <p class="requires reveal" use:reveal>
       GitBench drives the <code>git</code> command line, so make sure
       <a href="https://git-scm.com/downloads">Git</a> is installed and on your
       <code>PATH</code>. All builds and source are on
@@ -328,10 +336,10 @@
   </section>
 
   <section id="faq" class="faq">
-    <h2 class="section-title">Frequently asked questions</h2>
+    <h2 class="section-title reveal" use:reveal>Frequently asked questions</h2>
     <div class="faq-list">
-      {#each faqs as faq}
-        <details class="faq-item">
+      {#each faqs as faq, i}
+        <details class="faq-item reveal" use:reveal={{ i }}>
           <summary>
             {faq.q}
             <ChevronDown class="chev" size={20} aria-hidden="true" />
@@ -343,13 +351,13 @@
   </section>
 
   <section class="support">
-    <span class="support-icon"><Coffee size={26} aria-hidden="true" /></span>
-    <h2 class="section-title">Enjoying GitBench?</h2>
-    <p class="support-sub">
+    <span class="support-icon reveal" use:reveal><Coffee size={26} aria-hidden="true" /></span>
+    <h2 class="section-title reveal" use:reveal={{ i: 1 }}>Enjoying GitBench?</h2>
+    <p class="support-sub reveal" use:reveal={{ i: 2 }}>
       GitBench is free and open source. If it saves you time, you can help fuel
       its development with a coffee.
     </p>
-    <a class="btn primary" href={COFFEE} rel="noopener">
+    <a class="btn primary reveal" use:reveal={{ i: 3 }} href={COFFEE} rel="noopener">
       <Coffee size={18} aria-hidden="true" /> Buy me a coffee
     </a>
   </section>
@@ -537,9 +545,17 @@
     flex: none;
   }
 
-  /* ---------- screenshot ---------- */
+  /* ---------- preview / screenshot ---------- */
+  .preview {
+    padding: 96px 0 16px;
+    text-align: center;
+  }
+  .preview-sub {
+    color: var(--text-dim);
+    margin: 0 0 30px;
+  }
   .shot {
-    margin: 56px 0 0;
+    margin: 0;
   }
   .shot-toggle {
     display: inline-flex;
@@ -818,6 +834,7 @@
     .hero {
       padding-top: 40px;
     }
+    .preview,
     .features,
     .download {
       padding-top: 72px;
