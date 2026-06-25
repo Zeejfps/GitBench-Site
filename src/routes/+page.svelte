@@ -12,9 +12,11 @@
   import LayoutGrid from '@lucide/svelte/icons/layout-grid'
   import Tag from '@lucide/svelte/icons/tag'
   import Bug from '@lucide/svelte/icons/bug'
+  import Coffee from '@lucide/svelte/icons/coffee'
 
   const REPO = 'Zeejfps/GitBench'
   const LATEST = `https://github.com/${REPO}/releases/latest`
+  const COFFEE = 'https://buymeacoffee.com/zeejfps'
   const dl = (asset: string) =>
     `https://github.com/${REPO}/releases/latest/download/${asset}`
 
@@ -283,11 +285,24 @@
     </p>
   </section>
 
+  <section class="support">
+    <span class="support-icon"><Coffee size={26} aria-hidden="true" /></span>
+    <h2 class="section-title">Enjoying GitBench?</h2>
+    <p class="support-sub">
+      GitBench is free and open source. If it saves you time, you can help fuel
+      its development with a coffee.
+    </p>
+    <a class="btn primary" href={COFFEE} rel="noopener">
+      <Coffee size={18} aria-hidden="true" /> Buy me a coffee
+    </a>
+  </section>
+
   <footer>
     <div class="footer-links">
       <a href="https://github.com/{REPO}">{@render ghMark(15)} GitHub</a>
       <a href="https://github.com/{REPO}/releases"><Tag size={15} aria-hidden="true" /> Releases</a>
       <a href="https://github.com/{REPO}/issues"><Bug size={15} aria-hidden="true" /> Report an issue</a>
+      <a href={COFFEE} rel="noopener"><Coffee size={15} aria-hidden="true" /> Buy me a coffee</a>
     </div>
     <p>© {year} GitBench · built by <a href="https://evasilyev.com">zee</a></p>
   </footer>
@@ -636,6 +651,28 @@
     margin: 40px auto 0;
     text-align: center;
     font-size: 0.92rem;
+    color: var(--text-dim);
+  }
+
+  /* ---------- support ---------- */
+  .support {
+    padding: 96px 0 16px;
+    text-align: center;
+  }
+  .support-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    color: var(--accent);
+    background: rgba(240, 136, 62, 0.12);
+  }
+  .support-sub {
+    max-width: 520px;
+    margin: 0 auto 28px;
     color: var(--text-dim);
   }
 
