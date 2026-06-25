@@ -13,6 +13,7 @@
   import Tag from '@lucide/svelte/icons/tag'
   import Bug from '@lucide/svelte/icons/bug'
   import Coffee from '@lucide/svelte/icons/coffee'
+  import ChevronDown from '@lucide/svelte/icons/chevron-down'
 
   const REPO = 'Zeejfps/GitBench'
   const LATEST = `https://github.com/${REPO}/releases/latest`
@@ -83,6 +84,36 @@
     },
   ]
 
+  // Plain-text Q/A reused for both the rendered section and the FAQPage JSON-LD,
+  // so the structured data always matches the visible copy (Google requires this).
+  type Faq = { q: string; a: string }
+  const faqs: Faq[] = [
+    {
+      q: 'Is GitBench free?',
+      a: 'Yes. GitBench is completely free and open source. There are no paid tiers, accounts, or license keys — every feature is available to everyone.',
+    },
+    {
+      q: 'Which operating systems does GitBench support?',
+      a: 'GitBench runs natively on Windows (x64), macOS (both Apple Silicon and Intel), and Linux (x64, as an AppImage).',
+    },
+    {
+      q: 'Do I need Git installed to use GitBench?',
+      a: 'Yes. GitBench drives your existing Git command-line installation, so you need Git installed and available on your system PATH. You can get it from git-scm.com.',
+    },
+    {
+      q: 'How is GitBench different from GitKraken, Sourcetree, or Fork?',
+      a: 'GitBench is built around working in many repositories at once: every repo stays grouped in one sidebar so you can switch instantly without reopening windows. It is a native, GPU-accelerated app that is free and open source, with a visual commit graph, inline diffs, and one-click auto-updates.',
+    },
+    {
+      q: 'Does GitBench update automatically?',
+      a: 'Yes. GitBench checks for new releases on launch and applies them with a single click, so you stay current without manually downloading and reinstalling.',
+    },
+    {
+      q: 'Is GitBench safe to use, and where is the source code?',
+      a: 'GitBench is open source — all of the code and every release build are published on GitHub, so you can review exactly what it does or build it yourself.',
+    },
+  ]
+
   let os: OS = $state('unknown')
   let version = $state('')
   let shotTheme: 'dark' | 'light' = $state('dark')
@@ -126,6 +157,16 @@
     author: { '@type': 'Person', name: 'Zee Vasilyev', url: 'https://evasilyev.com' },
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   }
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  }
 </script>
 
 <svelte:head>
@@ -153,6 +194,7 @@
   <meta name="twitter:image" content={ogImage} />
 
   {@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
+  {@html `<script type="application/ld+json">${JSON.stringify(faqJsonLd)}<\/script>`}
 </svelte:head>
 
 {#snippet ghMark(size: number)}
@@ -283,6 +325,21 @@
       <code>PATH</code>. All builds and source are on
       <a href={LATEST}>GitHub Releases</a>.
     </p>
+  </section>
+
+  <section id="faq" class="faq">
+    <h2 class="section-title">Frequently asked questions</h2>
+    <div class="faq-list">
+      {#each faqs as faq}
+        <details class="faq-item">
+          <summary>
+            {faq.q}
+            <ChevronDown class="chev" size={20} aria-hidden="true" />
+          </summary>
+          <p>{faq.a}</p>
+        </details>
+      {/each}
+    </div>
   </section>
 
   <section class="support">
@@ -652,6 +709,57 @@
     text-align: center;
     font-size: 0.92rem;
     color: var(--text-dim);
+  }
+
+  /* ---------- faq ---------- */
+  .faq {
+    padding: 96px 0 16px;
+  }
+  .faq-list {
+    max-width: 760px;
+    margin: 36px auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .faq-item {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0 22px;
+    transition: border-color 0.15s ease;
+  }
+  .faq-item:hover {
+    border-color: #41484f;
+  }
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+    list-style: none;
+    padding: 20px 0;
+    font-weight: 600;
+    font-size: 1.02rem;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary :global(.chev) {
+    flex: none;
+    color: var(--text-dim);
+    transition: transform 0.18s ease;
+  }
+  .faq-item[open] summary :global(.chev) {
+    transform: rotate(180deg);
+  }
+  .faq-item p {
+    margin: 0;
+    padding: 0 0 22px;
+    color: var(--text-dim);
+    font-size: 0.98rem;
+    line-height: 1.6;
   }
 
   /* ---------- support ---------- */
