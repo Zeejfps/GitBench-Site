@@ -70,7 +70,8 @@ multi-repo, cross-platform, developer tools, open source
 
 - [x] **git-scm.com** GUI clients — PR https://github.com/git/git-scm.com/pull/2176
 - [ ] **AlternativeTo** — alternativeto.net (tag as alternative to GitKraken/Sourcetree/Fork/etc.)
-- [ ] **Awesome lists** — PR to maintained `awesome-git` repos, "GUI clients" section
+- [x] **awesome-git** (dictcp/awesome-git) — PR https://github.com/dictcp/awesome-git/pull/153
+- [ ] **Platform awesome-lists** — awesome-macos / Awesome-Windows / awesome-linux-software / awesome-dotnet (research in progress)
 - [ ] **Slant** — slant.co, add to "best Git client / best Git GUI" questions
 - [ ] **SaaSHub** — saashub.com
 - [ ] **StackShare** — stackshare.io
